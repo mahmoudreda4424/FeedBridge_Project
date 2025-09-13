@@ -1,0 +1,37 @@
+﻿@using Feed_Bridge.Models.Entities
+
+@model StaticPage
+@{
+    ViewData["Title"] = "التحكم في الواجهة";
+    ViewData["ActivePage"] = "EditHome";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<form asp-action="EditHome" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <!-- Validation Summary -->
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label>نص البطل (Hero Text)</label>
+        <textarea asp-for="Content1" rows="4" class="form-control"></textarea>
+        <span asp-validation-for="Content1" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>نص عن الموقع (About Text)</label>
+        <textarea asp-for="Content2" rows="6" class="form-control"></textarea>
+        <span asp-validation-for="Content2" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>رفع فيديو جديد (MP4 فقط)</label>
+        <input type="file" name="VideoFile" accept="video/mp4" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">حفظ التغييرات</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

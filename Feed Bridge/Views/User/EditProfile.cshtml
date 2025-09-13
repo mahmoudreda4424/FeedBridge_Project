@@ -1,0 +1,118 @@
+﻿@model Feed_Bridge.ViewModel.EditProfileViewModel
+
+@{
+    ViewData["Title"] = "تعديل الملف الشخصي";
+}
+<style>
+    .upload-img {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+    }
+
+        .upload-img:hover {
+            border-color: #1cba7f;
+            background-color: #f8f9fa;
+        }
+
+        .upload-img span {
+            font-size: 40px;
+            color: #1cba7f;
+        }
+
+        .upload-img p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+</style>
+<div class="container">
+    <div class="profile-edit">
+        <h2 class="form-header">تعديل الملف الشخصي</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <!-- لازم نضيف enctype="multipart/form-data" عشان نرفع ملف -->
+        <form asp-action="EditProfile" asp-controller="User" method="post" enctype="multipart/form-data" class="profile-edit-form">
+            @Html.AntiForgeryToken()
+
+            <div class="form-control mb-3">
+                <label class="form-label">الصورة الحالية</label><br />
+                @if (!string.IsNullOrEmpty(Model.CurrentImgUrl))
+                {
+                    <img src="@Model.CurrentImgUrl" alt="Profile Image" class="img-thumbnail mb-2" height="150" width="150" style="border-radius:50%; border:2px solid #1cba7f;" />
+                }
+                else
+                {
+                    <p>لا توجد صورة</p>
+                }
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="ImgFile" class="upload-img">
+                    <span class="material-symbols-outlined" id="uploadIcon">
+                        upload
+                    </span>
+                    <p>اضغط لتغيير الصورة</p>
+                    <input asp-for="ImgFile" type="file" accept="image/*" hidden />
+                </label>
+
+                <span asp-validation-for="ImgFile" class="text-danger" style="color:red;"></span>
+            </div>
+            <div class="form-control mb-3" id="newImageSection" style="display:none;">
+                <label class="form-label">الصورة الجديدة</label><br />
+                <img id="newImagePreview" src="#" alt="New Profile Image" class="img-thumbnail mb-2" height="150" width="150" style="border-radius:50%; border:2px solid #1cba7f;" />
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="BirthDate" class="form-label">تاريخ الميلاد</label>
+                <input asp-for="BirthDate" type="date" class="form-control" />
+                <span asp-validation-for="BirthDate" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="FullName" class="form-label">الاسم الكامل</label>
+                <input asp-for="FullName" type="text" class="form-control" placeholder="أدخل اسمك" />
+                <span asp-validation-for="FullName" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="PhoneNumber" class="form-label">رقم الهاتف</label>
+                <input asp-for="PhoneNumber" type="tel" class="form-control" placeholder="أدخل رقم هاتفك" />
+                <span asp-validation-for="PhoneNumber" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+            <a asp-action="Profile" class="btn btn-secondary">إلغاء</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelector('input[name="ImgFile"]').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("newImagePreview").src = e.target.result;
+                    document.getElementById("newImageSection").style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,179 @@
+﻿@model IEnumerable<Feed_Bridge.ViewModel.UserWithRoleVM>
+
+@{
+    ViewData["Title"] = "المستخدمين";
+    ViewData["ActivePage"] = "AllUsers";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-4">
+   @*  <h2 class="mb-4 text-center fw-bold text-primary">
+        <i class="bi bi-people-fill"></i> قائمة المستخدمين
+    </h2> *@
+
+    <form id="antiForgeryForm">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover align-middle">
+            <thead class="table-success text-center">
+                <tr>
+                    <th>الصورة</th>
+                    <th>اسم المستخدم</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الدور</th>
+                    <th>تغيير الدور</th>
+                    <th>الحالة</th>
+                    <th>الحذف</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                @if (Model.Any())
+                {
+                    foreach (var user in Model.Where(u => !u.Roles.Contains("Admin")))
+                    {
+                        <tr>
+                            <!-- صورة -->
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(user.ImgUrl)
+                                                                                          ? Url.Content("~/imgs/person.png")
+                                                                                          : Url.Content(user.ImgUrl))"
+                             alt="@user.UserName"
+                             class="rounded-circle border"
+                             style="width:50px;height:50px;object-fit:cover;" />
+                    </td>
+
+                            <!-- اسم المستخدم -->
+                            <td>
+                                <a asp-action="Profile" asp-controller="User" asp-route-userId="@user.UserId"
+                                   class="fw-bold text-decoration-none text-dark">
+                                    @user.UserName
+                                </a>
+                            </td>
+
+                            <!-- الإيميل -->
+                            <td class="text-muted">@user.Email</td>
+
+                            <!-- الدور الحالي -->
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    @(user.Roles.Any() ? string.Join(", ", user.Roles) : "User")
+                                </span>
+                            </td>
+
+                            <!-- تغيير الدور -->
+                            <td>
+                        @if (!(user.Roles.Contains("Admin")))
+                                {
+                                    <form asp-action="ChangeUserRole" asp-controller="Admin" method="post" class="d-flex justify-content-center">
+                                        <input type="hidden" name="userId" value="@user.UserId" />
+                                        <select name="newRole" class="form-select form-select-sm me-2">
+                                            <option value="User" selected="@(user.Roles.Contains("User") ? "selected" : null)">User</option>
+                                            <option value="Delivery" selected="@(user.Roles.Contains("Delivery") ? "selected" : null)">Delivery</option>
+                                            <option value="Admin" selected="@(user.Roles.Contains("Admin") ? "selected" : null)">Admin</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            تحديث
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">غير قابل للتغيير</span>
+                                }
+                            </td>
+
+                            <!-- التجميد -->
+                            <td>
+                                @if (user.Roles.Contains("Admin"))
+                                {
+                                    <span class="text-muted">غير قابل للتجميد</span>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="btn btn-sm @(user.IsFrozen ? "btn-warning" : "btn-outline-danger") toggle-freeze-btn"
+                                            data-user-id="@user.UserId">
+                                        @(user.IsFrozen ? "إلغاء التجميد" : "تجميد")
+                                    </button>
+                                }
+                            </td>
+
+                            <!-- الحذف -->
+                            <td>
+                                @if (user.IsDeleted)
+                                {
+                                    if (user.DeletedBy == "User")
+                                    {
+                                        <span class="badge bg-success">تم الحذف بواسطة المستخدم</span>
+                                    }
+                                    else if (user.DeletedBy == "Admin")
+                                    {
+                                        <span class="badge bg-danger">تم الحذف بواسطة الإدارة</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <form asp-action="DeleteUser" asp-controller="Admin" asp-route-id="@user.UserId" method="post">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> حذف
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">لا يوجد مستخدمين</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const successMessage = "@TempData["SuccessMessage"]";
+        if (successMessage && successMessage.trim() !== "") {
+            Swal.fire({ icon: 'success', title: 'نجاح!', text: successMessage, timer: 3000, showConfirmButton: false });
+        }
+
+        const errorMessage = "@TempData["ErrorMessage"]";
+        if (errorMessage && errorMessage.trim() !== "") {
+            Swal.fire({ icon: 'error', title: 'خطأ!', text: errorMessage, timer: 3000, showConfirmButton: false });
+        }
+
+        $(document).on("click", ".toggle-freeze-btn", function () {
+            var button = $(this);
+            var userId = button.data("user-id");
+            var token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ToggleFreeze", "Admin")",
+                data: { userId: userId, __RequestVerificationToken: token },
+                success: function (response) {
+                    if (response.success) {
+                        if (response.isFrozen) {
+                            button.removeClass("btn-outline-danger").addClass("btn-warning").text("إلغاء التجميد");
+                        } else {
+                            button.removeClass("btn-warning").addClass("btn-outline-danger").text("تجميد");
+                        }
+                        Swal.fire({ icon: 'success', title: 'نجاح!', text: response.message, timer: 2000, showConfirmButton: false });
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'خطأ!', text: response.message, timer: 2000, showConfirmButton: false });
+                    }
+                },
+                error: function () {
+                    Swal.fire({ icon: 'error', title: 'خطأ في الاتصال', text: 'تعذر تنفيذ العملية حالياً', timer: 2000, showConfirmButton: false });
+                }
+            });
+        });
+    </script>
+}

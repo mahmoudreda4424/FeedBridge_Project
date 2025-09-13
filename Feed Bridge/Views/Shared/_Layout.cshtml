@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <!-- Google fonts icons -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Font awesome icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Feed_Bridge</title>
+
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Feed_Bridge.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+</head>
+
+<body>
+    <!-- ✅ الهيدر -->
+    <header class="header">
+        <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+            <div class="header-logo">
+                <img src="~/imgs/logo.png" alt="logo" class="logo-img" />
+                <p>FeedBridge</p>
+            </div>
+        </a>
+
+
+        <span class="material-symbols-outlined mobile-icon">menu</span>
+
+        <ul class="page-items">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Admin"))
+                {
+                    <li><a asp-controller="Admin" asp-action="Dashboard">لوحة التحكم</a></li>
+                }
+                else if (User.IsInRole("Delivery"))
+                {
+                    <li><a asp-controller="Delivery" asp-action="Dashboard">لوحة التوصيل</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
+                    <li><a asp-controller="Product" asp-action="Index">المنتجات</a></li>
+                    <li><a asp-controller="Donation" asp-action="Create">تبرع</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="about">عن الموقع</a></li>
+                }
+            }
+            else
+            {
+                <li><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
+                <li><a asp-controller="Product" asp-action="Index">المنتجات</a></li>
+                <li><a asp-controller="Donation" asp-action="Create">تبرع</a></li>
+                <li><a asp-controller="Home" asp-action="Index" asp-fragment="about">عن الموقع</a></li>
+            }
+        </ul>
+
+        <div class="header-icons">
+
+
+            @if (User.IsInRole("User"))
+            {
+                <a asp-controller="Cart" asp-action="Index">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                </a>
+            }
+
+
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <!-- تعديل الرابط ليستخدم asp-controller و asp-action -->
+                <a asp-controller="User" asp-action="Profile" asp-route-id="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">
+                    <span class="material-symbols-outlined" style="color:#1cba7f;">account_circle</span>
+                </a>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-link p-0">تسجيل خروج</button>
+                </form>
+            }
+            else
+            {
+                <!-- المستخدم غير مسجل -->
+                <a asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+            }
+
+        </div>
+
+    </header>
+
+    <!-- ✅ هنا المحتوى بيتغير -->
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    @* Footer section *@
+    @await RenderSectionAsync("FooterSection", required: false)
+</body>
+
+</html>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

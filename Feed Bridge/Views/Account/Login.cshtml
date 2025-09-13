@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+
+<head>
+	<style>
+        .login .login-links a {
+            margin: 0 20px; 
+        }
+
+    </style>
+</head>
+
+    <div class="container">
+        <div class="login">
+            <img src="~/imgs/image.png" alt="user-icon" class="login-img" />
+            <h1 class="login-header">تسجيل الدخول</h1>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger" style="color:red;">@ViewBag.Error</div>
+            }
+
+            <form asp-action="Login" method="post" class="login-form">
+                <div class="form-control">
+                    <label for="email">الايميل</label>
+                    <input type="email" name="email" id="email" required />
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <i class="fa-solid fa-circle-check"></i>
+                    <small></small>
+                </div>
+                <div class="form-control">
+                    <label for="password">كلمه المرور</label>
+                    <input type="password" name="password" id="password" required />
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <i class="fa-solid fa-circle-check"></i>
+                    <small></small>
+                </div>
+                <button type="submit" class="submit-btn btn">ارسال</button>
+                <div class="login-links">
+                    <a asp-controller="Account" asp-action="Register">ليس لديك حساب؟</a>
+                    <a asp-controller="Account" asp-action="ForgotPassword">نسيت كلمة المرور؟</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="~/js/script.js"></script> 
+
+@section FooterSection {
+    @await Html.PartialAsync("_Footer")
+}

@@ -1,0 +1,114 @@
+﻿@model IEnumerable<Feed_Bridge.Models.Entities.Product>
+
+@{
+    ViewData["Title"] = "المنتجات";
+    ViewData["ActivePage"] = "Products";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<h1 class="mb-4">قائمة المنتجات</h1>
+
+<table class="table table-hover table-bordered text-center">
+    <thead class="table-dark">
+        <tr>
+            <th>الاسم</th>
+            <th>تاريخ اضافه المنتج</th>
+            <th>تاريخ الانتهاء</th>
+            <th>الكمية</th>
+            <th>الصورة</th>
+           <th> حذف </th>
+           <th>تعديل </th>
+           <th>التصنيف  </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.CreatedAt.ToShortDateString()</td>
+                    <td>@product.ExpirDate.ToShortDateString()</td>
+                    <td>@product.Quantity</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(product.ImgURL))
+                        {
+                            <img src="@Url.Content("~/uploads/" + product.ImgURL)"
+                                 alt="@product.Name"
+                                 style="width:50px;height:50px;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <img src="~/imgs/Empty.png"
+                                 alt="صورة افتراضية"
+                                 style="width:50px;height:50px;object-fit:cover;" />
+                        }
+                    </td>
+
+                    <td>
+                        <form asp-action="Delete" asp-controller="Product" method="post" style="display:inline" id="deleteForm-@product.Id">
+                            <input type="hidden" name="id" value="@product.Id" />
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete('@product.Id')">
+                                حذف
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-controller="Product" asp-route-id="@product.Id">
+
+                                ✏️ تعديل
+                          </a>
+                    </td>
+                    <th> @product.Category </th>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">لا توجد منتجات</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "لا يمكنك التراجع بعد الحذف!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#bb2d3b',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm-' + id).submit();
+                }
+            });
+        }
+    </script>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '@TempData["SuccessMessage"]',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        </script>
+    }
+}
+

@@ -1,0 +1,84 @@
+﻿@using Feed_Bridge.Models.Enums
+@model IEnumerable<Feed_Bridge.Models.Entities.Order>
+
+@{
+    ViewData["Title"] = "الطلبات";
+    ViewData["ActivePage"] = "Orders";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1 class="mb-4">قائمة الطلبات</h1>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr >
+            <th>المستخدم</th>
+            <th>الحالة</th>
+            <th>اجراءات</th>
+            <th>المنتجات</th>
+            <th>وقت الطلب</th>
+            <th>كل الطلبات </th>
+            <th>العنوان</th>
+            <th>رقم التلفون</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var order in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-controller="User" asp-action="Profile" asp-route-id="@order.User?.Id">
+                            @order.User?.UserName
+                        </a>
+                    </td>
+                    <td>@order.Status</td>
+                    <td>
+                        @if (order.Status == OrderStatus.Pending)
+                        {
+                            <a asp-action="Approve" asp-route-id="@order.Id" class="btn btn-success btn-sm">
+                                موافقة
+                            </a>
+                            <a asp-action="Reject" asp-route-id="@order.Id" class="btn btn-danger btn-sm">
+                                رفض
+                            </a>
+                        }
+                        else if (order.Status == OrderStatus.Approved)
+                        {
+                            <span class="badge bg-success">تمت الموافقة على الطلب</span>
+                        }
+                        else if (order.Status == OrderStatus.Rejected)
+                        {
+                            <span class="badge bg-danger">تم رفض الطلب</span>
+                        }
+                    </td>
+                    <td>
+                        <ul>
+                            @foreach (var op in order.OrderProducts)
+                            {
+                                <li>@op.Product?.Name (@op.Quantity)</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>@order.CreatedAt.ToString("yyyy/MM/dd")</td>
+                    <td>
+                        <a asp-action="History" asp-controller="Order" asp-route-userId="@order.UserId">
+                            كل الطلبات 
+
+                        </a>
+                    </td>
+                    <td> @order.User?.Address</td>
+                    <td>@order.User?.PhoneNumber</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">لا توجد طلبات حالياً</td>
+            </tr>
+        }
+    </tbody>
+</table>

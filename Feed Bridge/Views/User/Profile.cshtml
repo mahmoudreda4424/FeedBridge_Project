@@ -1,0 +1,136 @@
+﻿@model Feed_Bridge.Models.Entities.ApplicationUser
+<style>
+    .change-password-section{
+    display: flex;
+    justify-content: space-around;
+    }
+
+</style>
+<div class="profile-container">
+
+    <!-- شريط التحذير لو الحساب محذوف -->
+    @if (Model.IsDeleted)
+    {
+        <div class="alert alert-danger text-center fw-bold fs-5" role="alert" style="margin-bottom:20px;">
+            @if (Model.DeletedBy == "User")
+            {
+                <span>هذا الحساب تم حذفه بواسطة صاحبه</span>
+            }
+            else if (Model.DeletedBy == "Admin")
+            {
+                <span>هذا الحساب تم حذفه بواسطة الإدارة</span>
+            }
+            else
+            {
+                <span>هذا الحساب محذوف</span>
+            }
+        </div>
+    }
+
+
+    @if (User.Identity.IsAuthenticated &&
+    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.Id)
+    {
+        <div class="heading">
+            <p class="section-title">بيانات المستخدم</p>
+            <a style="color: white;" asp-action="EditProfile" asp-controller="User" class="edit-button btn">تعديل</a>
+        </div>
+    }
+    @if (User.IsInRole("User"))
+    {
+        <div class="heading">
+            <a style="color: white;" asp-action="History" asp-controller="Order" asp-route-userId="@Model.Id" class="edit-button btn">طلباتي</a>
+        </div>
+    }
+    
+
+    <!-- صورة البروفايل -->
+    <div class="profile-image text-center">
+        @if (!string.IsNullOrEmpty(Model.ImgUrl))
+        {
+            <img src="@Url.Content(Model.ImgUrl)"
+                 alt="Profile Image"
+                 class="img-thumbnail mb-2"
+                 height="150"
+                 width="150"
+                 style="border-radius:50%; border:2px solid #1cba7f;" />
+        }
+        else
+        {
+            <img src="@Url.Content("~/imgs/anon.jpg")"
+                 alt="Profile Image"
+                 class="img-thumbnail mb-2"
+                 height="150"
+                 width="150"
+                 style="border-radius:50%; border:2px solid #1cba7f;" />
+        }
+    </div>
+
+
+    <!-- البيانات الشخصية -->
+    <div class="profile-section">
+        <div class="sub-heading">
+            <span class="material-symbols-outlined"> group </span>
+            <p>البيانات الشخصيه</p>
+        </div>
+        <div class="info-container">
+            <div class="info-item">
+                <span class="material-symbols-outlined"> sentiment_satisfied </span>
+                <span class="info-label">الاسم:</span>
+                <span class="info-value">@Model.UserName</span>
+            </div>
+            <div class="info-item">
+                <span class="material-symbols-outlined"> calendar_today </span>
+                <span class="info-label">تاريخ الميلاد:</span>
+                <span class="info-value">@Model.BirthDate.ToString("yyyy/MM/dd")</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- بيانات التواصل -->
+    <div class="contact-section">
+        <div class="sub-heading">
+            <span class="material-symbols-outlined"> contact_mail </span>
+            <p>بيانات التواصل</p>
+        </div>
+        <div class="info-container">
+            <div class="info-item">
+                <span class="material-symbols-outlined"> phone </span>
+                <span class="info-label">رقم الهاتف:</span>
+                <span class="info-value">@Model.PhoneNumber</span>
+            </div>
+            <div class="info-item">
+                <span class="material-symbols-outlined"> email </span>
+                <span class="info-label">البريد الالكتروني:</span>
+                <span class="info-value">@Model.Email</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- تغيير كلمة المرور -->
+    <div class="change-password-section">
+
+        @if (User.Identity.IsAuthenticated &&
+        User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.Id)
+        {
+            <div class="sub-heading">
+
+                <a asp-controller="User" asp-action="ChangePassword" class="btn confirm-btn">تغيير كلمة المرور</a>
+            </div>
+        }
+
+
+        <div class="sub-heading">
+            @if (User.Identity.IsAuthenticated &&
+            User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.Id && !User.IsInRole("Admin"))
+            {
+                <a asp-controller="User" asp-action="DeleteAccount" class="btn confirm-btn" style="background-color:red;">
+                    حذف الحساب
+                </a>
+            }
+        </div>
+
+    </div>
+
+    
+</div>

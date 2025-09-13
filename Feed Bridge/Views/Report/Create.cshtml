@@ -1,0 +1,34 @@
+﻿@model Feed_Bridge.ViewModel.ReportViewModel
+
+@{
+    ViewData["Title"] = "إرسال تقرير";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>إرسال تقرير للمتبرع</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label>العنوان</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>المحتوى</label>
+        <textarea asp-for="Content" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>اختر المتبرع</label>
+        <select asp-for="SelectedUserId" class="form-control"
+                asp-items="@(new SelectList(Model.Donors, "Id", "Email"))">
+            <option value="">-- اختر متبرع --</option>
+        </select>
+        <span asp-validation-for="SelectedUserId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">إرسال</button>
+</form>
+<a asp-action="Reports" asp-controller="Admin" class="btn btn-secondary">إلغاء</a>

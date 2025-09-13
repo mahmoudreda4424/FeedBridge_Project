@@ -1,0 +1,31 @@
+﻿@model Feed_Bridge.Models.Entities.Partener
+
+@{
+    ViewData["Title"] = "إضافة شريك جديد";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="mb-4">إضافة شريك جديد</h2>
+
+<form asp-action="Create" asp-controller="Partner" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="Name" class="form-label">اسم الشريك</label>
+        <input type="text" name="Name" id="Name" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label for="imageUrl" class="form-label">صورة الشريك</label>
+        <input type="file" name="imageUrl" id="imageUrl" class="form-control" required />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="redirectUrl" class="form-label">رابط التحويل (اختياري)</label>
+        <input type="text" name="redirectUrl" id="redirectUrl" class="form-control" placeholder="مثال: https://example.com" />
+    </div>
+
+    <button asp-action="Create" asp-controller="Partner" type="submit" class="btn btn-success">
+        <i class="bi bi-check-circle"></i> حفظ
+    </button>
+    <a asp-action="AllPartners" asp-controller="Admin" class="btn btn-secondary">إلغاء</a>
+</form>
+

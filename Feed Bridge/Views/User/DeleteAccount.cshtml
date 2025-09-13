@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Delete Account";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-danger shadow-lg">
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="bi bi-exclamation-triangle-fill fs-1 mb-2"></i>
+                    <h2 class="mb-0">تأكيد حذف الحساب</h2>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <p class="lead">هل أنت متأكد أنك تريد <strong class="text-danger">حذف حسابك نهائيًا؟</strong></p>
+                    <hr>
+                    <p class="mb-4">
+                        <strong class="text-dark">يرجى قراءة ما سيحدث بعناية:</strong>
+                    </p>
+                    <ul class="list-unstyled text-start mx-auto" style="max-width: fit-content;">
+                        <li class="mb-2">
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i> ستفقد جميع بياناتك وتاريخك على هذا الموقع.
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i> سيتم حذف ملفك الشخصي بشكل دائم ولا يمكن استعادته.
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i> سيتم حذف جميع مساهماتك (مثل التبرعات ).
+                        </li>
+                    </ul>
+                    <hr>
+                    <p class="mt-4">
+                        <strong class="text-danger">هذا الإجراء لا رجعة فيه.</strong>
+                    </p>
+                </div>
+                <div class="card-footer bg-light border-top-0 d-flex justify-content-center gap-3 p-4">
+                    <form asp-action="DeleteAccountConfirmed" method="post">
+                        <button type="submit" class="btn btn-danger btn-lg" style="background-color:red;">
+                            <i class="bi bi-trash-fill me-2"></i> نعم، احذف حسابي
+                        </button>
+                    </form>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg" style="color:white;">
+                        <i class="bi bi-arrow-left me-2"></i> إلغاء
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" defer></script>
+}

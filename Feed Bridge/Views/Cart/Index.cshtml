@@ -1,0 +1,202 @@
+﻿@using System.Linq
+@using Feed_Bridge.Models.Entities
+@model Cart
+@{
+    ViewData["Title"] = "سلة المنتجات";
+}
+
+<link rel="stylesheet" href="~/Feed_Bridge.styles.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+<div class="container mt-5">
+    <div class="card shadow rounded-3">
+        <div class="card-header text-center bg-dark text-white">
+            🛒 سلة المنتجات
+        </div>
+        <div class="card-body cart-container">
+            @if (Model == null || Model.ProductCarts == null || !Model.ProductCarts.Any())
+            {
+                <p class="text-center text-muted fs-5 mt-4">
+                    السلة فارغة حالياً
+                </p>
+                <div class="text-center mt-3">
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                        ⬅️ عودة للمنتجات
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 17%;">الصورة</th>
+                                <th style="width: 20%;">اسم المنتج</th>
+                                <th style="width: 20%;">الكمية</th>
+                                <th style="width: 28%;">تاريخ الانتهاء</th>
+                                <th style="width: 5%;">➖</th>
+                                <th style="width: 5%;">➕</th>
+                                <th style="width: 5%;">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductCarts)
+                            {
+                                <tr data-product-id="@item.ProductId">
+                                    <td>
+                                        <img src="~/uploads/@(item.Product.ImgURL ?? "img.png")"
+                                             alt="@item.Product.Name" width="80" height="80" />
+                                    </td>
+                                    <td>@item.Product.Name</td>
+                                    <td>
+                                        <span class="mx-2 quantity">@item.Quantity</span>
+                                    </td>
+                                    <td>@item.Product.ExpirDate.ToString("yyyy/MM/dd")</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-warning decrease-btn" data-product-id="@item.ProductId">➖</button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-success increase-btn" data-product-id="@item.ProductId">➕</button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger remove-btn" data-product-id="@item.ProductId">إزالة</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-4">
+                    <form asp-controller="Order" asp-action="Confirm" method="post">
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                             تأكيد الطلب
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // إعداد Toast زي صفحة المنتجات بالمللي
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        // دالة عرض التنبيه
+        function showAlert(message, type = "success") {
+            Toast.fire({
+                icon: type === "success" ? "success" : "error",
+                title: message
+            });
+        }
+
+        // إزالة المنتج
+        $(document).on("click", ".remove-btn", function(e) {
+            e.preventDefault();
+            let btn = $(this);
+            let productId = btn.data("product-id");
+            let row = btn.closest("tr");
+
+            $.post("/Cart/Remove", { productId }, function(res) {
+    if (res.success) {
+        row.remove();
+        showAlert(res.message, "success");
+
+        // لو مافيش أي row متبقية
+        if ($(".cart-container tbody tr").length === 0) {
+            $(".cart-container").html(`
+                <p class="text-center text-muted fs-5 mt-4">
+                    السلة فارغة حالياً
+                </p>
+                <div class="text-center mt-3">
+                    <a href="/Product/Index" class="btn btn-primary">
+                        ⬅️ عودة للمنتجات
+                    </a>
+                </div>
+            `);
+        }
+
+    } else {
+        showAlert(res.message, "error");
+    }
+});
+
+        });
+
+        // زيادة الكمية
+        $(document).on("click", ".increase-btn", function(e) {
+            e.preventDefault();
+            let btn = $(this);
+            let productId = btn.data("product-id");
+            let row = btn.closest("tr");
+
+            $.post("/Cart/IncreaseQuantity", { productId }, function(res) {
+                if (res.success) {
+                    let qtySpan = row.find(".quantity");
+                    qtySpan.text(parseInt(qtySpan.text()) + 1);
+                    showAlert(res.message, "success");
+                } else {
+                    showAlert(res.message, "error");
+                }
+            });
+        });
+
+        // تقليل الكمية
+$(document).on("click", ".decrease-btn", function(e) {
+    e.preventDefault();
+    let btn = $(this);
+    let productId = btn.data("product-id");
+    let row = btn.closest("tr");
+
+    $.post("/Cart/DecreaseQuantity", { productId }, function(res) {
+        if (res.success) {
+            let qtySpan = row.find(".quantity");
+            let newQty = parseInt(qtySpan.text()) - 1;
+
+            if (newQty > 0) {
+                qtySpan.text(newQty);
+            } else {
+                row.remove();
+            }
+
+            showAlert(res.message, "success");
+
+            // لو مافيش أي row متبقية بعد إزالة أو تقليل الكمية
+            if ($(".cart-container tbody tr").length === 0) {
+                $(".cart-container").html(`
+                    <p class="text-center text-muted fs-5 mt-4">
+                        السلة فارغة حالياً
+                    </p>
+                    <div class="text-center mt-3">
+                        <a href="/Product/Index" class="btn btn-primary">
+                            ⬅️ عودة للمنتجات
+                        </a>
+                    </div>
+                `);
+            }
+
+        } else {
+            showAlert(res.message, "error");
+        }
+    });
+});
+
+    </script>
+}

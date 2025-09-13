@@ -1,0 +1,57 @@
+﻿@{
+  
+    Layout = "_DeliveryLayout";
+    ViewData["Title"] = "لوحة تحكم التوصيل";
+
+}
+<style>
+    .row g-3 mb-4{
+		display: flex;
+    }
+</style>
+
+<h1 class="mb-3">مرحبا بك في لوحة تحكم التوصيل</h1>
+<p class="text-muted">هنا تقدر تشوف ملخص الطلبات والتبرعات الخاصة بالتوصيل.</p>
+
+<!-- الجزء الخاص بالترحيب -->
+<div class="d-flex justify-content-between align-items-center p-3 bg-light rounded shadow-sm mb-4">
+    <div class="d-flex align-items-center">
+        <span class="material-symbols-outlined fs-1 me-2" style="color:#1cba7f;">person</span>
+        <p class="mb-0">مرحبًا<br><span class="fw-bold">@User.Identity.Name</span></p>
+    </div>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-flex align-items-center">
+        <button type="submit" class="btn btn-link text-danger text-decoration-none d-flex align-items-center" style="padding:0;">
+            <span class="material-symbols-outlined me-1">logout</span>
+            الخروج
+        </button>
+    </form>
+</div>
+
+<!-- إحصائيات الطلبات -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="p-3 bg-light rounded shadow-sm text-center">
+            <span class="material-symbols-outlined fs-1" style="color:#1cba7f;">local_shipping</span>
+            <h3 class="mt-2">@ViewData["TotalOrders"]</h3>
+            <p class="mb-0">الطلبات قيد التوصيل</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="p-3 bg-light rounded shadow-sm text-center">
+            <span class="material-symbols-outlined fs-1s" style="color:#1cba7f;">done_all</span>
+            <h3 class="mt-2">@ViewData["CompletedOrders"]</h3>
+            <p class="mb-0">الطلبات المكتملة</p>
+        </div>
+    </div>
+</div>
+
+<!-- إحصائيات التبرعات -->
+<a asp-controller="Delivery" asp-action="Donations" class="text-decoration-none">
+    <div class="p-3 bg-light rounded shadow-sm text-center">
+        <span class="material-symbols-outlined fs-1" style="color:#1cba7f;">favorite</span>
+        <h3 class="mt-2">@ViewData["TotalDonations"]</h3>
+        <p class="mb-0">إجمالي التبرعات</p>
+    </div>
+</a>
+
+

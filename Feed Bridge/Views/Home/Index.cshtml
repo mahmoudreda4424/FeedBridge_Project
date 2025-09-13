@@ -1,0 +1,271 @@
+﻿@model Feed_Bridge.ViewModel.HomeViewModel
+@{
+    ViewData["Title"] = "الرئيسية";
+}
+
+<style>
+    .hidden-review {
+        display: none;
+    }
+
+    .feedback-card {
+        width: 600px;
+    }
+
+    .feedback-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .hidden-rev .feedback-card{
+		margin-bottom: 50px;
+    }
+
+    .partner-logos div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+	}
+    .partner-logos div a {
+        margin-top: 10px;
+        text-decoration: none;
+        color: white;
+			font-weight: bold;}
+</style>
+
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-text">
+            <h1>FeedBridge</h1>
+            <p>
+                @Model.Content1
+                @* يهدف موقعنا الي ربط المطاعم و محلات الطعام بالجمعيات الخيريه لتسهيل
+                التبرع بالطعام الفائض بشكل امن و سريع. من خلاله يمكن للمتبرعين تسجيل
+                تبرعاتهم بسهوله. بينما تتولي الجمعيات عمليه التوزيع لضمان وصول
+                الطعام الي من يحتاجه, معا نصنع فرقا و نبني جسور العطاء. *@
+            </p>
+
+            <a asp-controller="Supports" asp-action="Donate" class="hero-btn">ادعمنا</a>
+        </div>
+    </div>
+</section>
+
+<section class="video-section" id="about">
+    <div class="video-container">
+        <video controls autoplay loop muted>
+            <source src="@Url.Content(Model.VideoUrl ?? "~/imgs/default-video.mp4")" type="video/mp4" />
+            متصفحك لا يدعم الفيديو.
+        </video>
+        <div class="about-text">
+            <p>
+				@Model.Content2
+                @* 
+                كيف يعمل موقعنا؟<br />
+                تسجيل التبرعات أسهل من قبل!<br />
+                المطاعم و المتبرعون يسجلون الطعام الفائض عبر منصتنا الجمعيات الخيريه
+                تتلقي اشعارات بالتبرعات القريبه فرق التوزيع تستلم الطعام و توصله لمن
+                يحتاجه. معا نقلل الهدر و نساعد المحتاجين. *@
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="partner-section">
+    <div class="partner-container">
+        <h2>شركاؤنا</h2>
+        <div class="partner-logos">
+            @if (Model.Partners != null && Model.Partners.Any())
+            {
+                foreach (var partner in Model.Partners.Take(4))
+                {
+                    <div>
+                        <img src="@Url.Content(partner.ImageUrl)" alt="@partner.Name" style="width:150px; height:150px; background-color:white;" />
+                        <a href="@Url.Content(partner.RedirectUrl)" target="_blank">@partner.Name</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div>
+                    <img src="~/imgs/anon.jpg" style="width:150px; height:150px; background-color:white;" />
+                </div>
+                <div>
+                    <img src="~/imgs/anon.jpg" style="width:150px; height:150px; background-color:white;" />
+                </div>
+                <div>
+                    <img src="~/imgs/anon.jpg" style="width:150px; height:150px; background-color:white;" />
+                </div>
+                <div>
+                    <img src="~/imgs/anon.jpg" style="width:150px; height:150px; background-color:white;" />
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stats-card">
+            <span class="material-symbols-outlined"> schedule </span>
+            <p class="stats-num">+999</p>
+            <p>فرص التبرع المتاحه</p>
+        </div>
+        <div class="stats-card">
+            <span class="material-symbols-outlined"> sentiment_satisfied </span>
+            <p class="stats-num">+100</p>
+            <p>الفرص المكتمله</p>
+        </div>
+        <div class="stats-card">
+            <span class="material-symbols-outlined"> favorite </span>
+            <p class="stats-num">+1299</p>
+            <p>العمليات التبرعيه</p>
+        </div>
+    </div>
+</section>
+
+<section class="feedback-section">
+    <div class="feedback-container">
+        @if (Model != null && Model.Reviews.Any())
+        {
+            var displayedReviews = Model.Reviews.Take(4);
+            var hiddenReviews = Model.Reviews.Skip(4);
+
+            @foreach (var item in displayedReviews)
+            {
+                <div class="feedback-card">
+                    <img src="@Url.Content(item.User.ImgUrl)" alt="@item.User.UserName" style="width:50px; height:50px; border:2px solid #1cba7f" />
+                    <p class="feedback-text">@item.FeedBackMsg</p>
+                    <div class="feedback-stars">
+                        @for (int i = 0; i < item.StarsNumber; i++)
+                        {
+                            <span class="material-symbols-outlined">star</span>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (hiddenReviews.Any())
+            {
+                <div class="hidden-rev" id="hiddenReviewsContainer" style="display: none;">
+                    @foreach (var item in hiddenReviews)
+                    {
+                        <div class="feedback-card">
+                            <img src="@Url.Content(item.User.ImgUrl??"~/imgs/anon.jpg")"
+                                    style="width:50px; height:50px; border:2px solid #1cba7f" />
+
+                            <p class="feedback-text">@item.FeedBackMsg</p>
+                            <div class="feedback-stars">
+                                @for (int i = 0; i < item.StarsNumber; i++)
+                                {
+                                    <span class="material-symbols-outlined">star</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (Model.Reviews.Count() > 4)
+            {
+                <a href="#" id="readMoreLink" class="btn">اقرأ المزيد</a>
+                <a href="#" id="readLessLink" class="btn" style="display: none;">اقرأ أقل</a>
+            }
+        }
+        else
+        {
+            <div class="feedback-card">
+                <img src="@Url.Content("~/imgs/person.png")" alt="" />
+                <p class="feedback-text">لا توجد تقييمات بعد، كن أول من يشارك تجربته!</p>
+                <div class="feedback-stars">
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                </div>
+            </div>
+            <div class="feedback-card">
+                <img src="@Url.Content("~/imgs/person.png")" alt="" />
+                <p class="feedback-text">لا توجد تقييمات بعد، كن أول من يشارك تجربته!</p>
+                <div class="feedback-stars">
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="feedback-form">
+        <form asp-action="AddReview" method="post">
+            <textarea name="FeedBackMsg" placeholder="اكتب تقييمك ..." required></textarea>
+            <div class="stars">
+                <input type="checkbox" value="1" id="star1" />
+                <label for="star1" class="material-symbols-outlined"> star </label>
+
+                <input type="checkbox" value="2" id="star2" />
+                <label for="star2" class="material-symbols-outlined"> star </label>
+
+                <input type="checkbox" value="3" id="star3" />
+                <label for="star3" class="material-symbols-outlined"> star </label>
+
+                <input type="checkbox" value="4" id="star4" />
+                <label for="star4" class="material-symbols-outlined"> star </label>
+
+                <input type="checkbox" value="5" id="star5" />
+                <label for="star5" class="material-symbols-outlined"> star </label>
+            </div>
+            <input type="hidden" name="StarsNumber" id="StarsNumber" />
+            <button type="submit" class="btn">إرسال</button>
+        </form>
+    </div>
+
+</section>
+
+<script>
+    const checkboxes = document.querySelectorAll(".stars input[type=checkbox]");
+    const hiddenInput = document.getElementById("StarsNumber");
+
+    checkboxes.forEach((cb) => {
+        cb.addEventListener("change", () => {
+            let maxValue = 0;
+            const checkedIndex = Array.from(checkboxes).indexOf(cb);
+
+            checkboxes.forEach((c, i) => {
+                c.checked = i <= checkedIndex;
+                if (c.checked) {
+                    maxValue = Math.max(maxValue, parseInt(c.value));
+                }
+            });
+            hiddenInput.value = maxValue;
+        });
+    });
+
+    const readMoreLink = document.getElementById("readMoreLink");
+    const readLessLink = document.getElementById("readLessLink");
+    const hiddenReviewsContainer = document.getElementById("hiddenReviewsContainer");
+
+    if (readMoreLink && hiddenReviewsContainer) {
+        readMoreLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            hiddenReviewsContainer.style.display = "block";
+            readMoreLink.style.display = "none";
+            readLessLink.style.display = "block";
+        });
+    }
+
+    if (readLessLink && hiddenReviewsContainer) {
+        readLessLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            hiddenReviewsContainer.style.display = "none";
+            readLessLink.style.display = "none";
+            readMoreLink.style.display = "block";
+        });
+    }
+</script>
+
+@section FooterSection {
+    @await Html.PartialAsync("_Footer")
+}

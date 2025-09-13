@@ -1,0 +1,134 @@
+﻿@model Feed_Bridge.ViewModel.RegisterViewModel
+
+@{
+    ViewData["Title"] = "تسجيل حساب جديد";
+}
+<style>
+    .upload-img {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        text-align: center;
+    }
+
+        .upload-img:hover {
+            border-color: #1cba7f;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .upload-img span {
+            font-size: 40px;
+            color: #6c757d;
+            transition: color 0.3s;
+        }
+
+        .upload-img:hover span {
+            color: #1cba7f;
+        }
+
+        .upload-img p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+    #previewImage {
+        border-radius: 10px;
+        object-fit: cover;
+    }
+</style>
+<div class="container">
+    <div class="register" dir="rtl">
+        <div class="register-img text-center mb-4">
+            <img src="~/imgs/image.png" alt="register-img" class="img-fluid mb-2" />
+            <p class="fw-bold">إنشاء حساب</p>
+        </div>
+
+        <form asp-action="Register" asp-controller="Account" method="post" id="register-form" class="register-form" enctype="multipart/form-data" >
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" style="color:red;"></div>
+
+            <div class="register-form-group d-flex gap-3">
+                <div class="form-control flex-fill">
+                    <label asp-for="UserName" class="form-label"></label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger" style="color:red;"></span>
+                </div>
+                <div class="form-control flex-fill">
+                    <label asp-for="BirthDate" class="form-label"></label>
+                    <input asp-for="BirthDate" type="date" class="form-control" />
+                    <span asp-validation-for="BirthDate" class="text-danger" style="color:red;"></span>
+                </div>
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <div class="form-control mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <!-- Upload Image Section -->
+            <div class="form-control mb-3">
+                <label asp-for="ImgFile" class="upload-img">
+                    <span class="material-symbols-outlined" id="uploadIcon">upload</span>
+                    <p>اضغط لاختيار صورة شخصية</p>
+                    <input asp-for="ImgFile" type="file" accept="image/*" hidden />
+                </label>
+                <span asp-validation-for="ImgFile" class="text-danger" style="color:red;"></span>
+            </div>
+            <!-- Preview Section -->
+            <div class="form-control mb-3" id="previewSection" style="display:none;">
+                <label class="form-label">معاينة الصورة</label><br />
+                <img id="previewImage" src="#" alt="Preview Image" class="img-thumbnail mb-2" width="150" />
+            </div>
+
+            <button type="submit" class="submit-btn btn btn-primary w-100">إرسال</button>
+
+            <div class="login-links text-center mt-3">
+                <a asp-action="Login" asp-controller="Account">لديك حساب؟ تسجيل الدخول</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.querySelector("input[name='ImgFile']").addEventListener("change", function (e) {
+            if (e.target.files && e.target.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function (event) {
+                    document.getElementById("previewImage").src = event.target.result;
+                    document.getElementById("previewSection").style.display = "block";
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+}

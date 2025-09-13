@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Feed_Bridge.Models.Entities.Donation>
+
+@{
+    Layout = "_DeliveryLayout";
+    ViewData["Title"] = "تبرعاتي";
+}
+
+<h1 class="mb-3">تبرعاتي</h1>
+
+<div class="Donations_data_table">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>رقم التبرع</th>
+                <th>اسم المتبرع</th>
+                <th>المنتجات</th>
+                <th>الكمية</th>
+                <th>العنوان</th>
+                <th>الهاتف</th>
+                <th>تاريخ الانتهاء</th>
+                <th>الحالة</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var donation in Model ?? Enumerable.Empty<Feed_Bridge.Models.Entities.Donation>())
+            {
+                    <tr>
+                        <td>@donation.Id</td>
+                        <td>
+                            <a asp-action="Profile" asp-controller="User" asp-route-id="@donation.UserId">@donation.User.UserName</a>
+                        </td>
+                        <td>
+                            <ul>
+                            @foreach (var product in donation.Product ?? Enumerable.Empty<Feed_Bridge.Models.Entities.Product>())
+                            {
+                                        <li>@(product?.Name ?? "غير محدد")</li>
+                            }
+                            </ul>
+                        </td>
+                        <td>@donation.Quantity</td>
+                        <td>@donation.Address</td>
+                        <td>@donation.Phone</td>
+                        <td>@donation.ExpirDate.ToString("dd/MM/yyyy")</td>
+                        <td>@donation.Status</td>
+                        <td>
+                        @if (donation.Status == Feed_Bridge.Models.Enums.DonationStatus.Assigned)
+                        {
+                                    <form asp-action="MarkAsTaken" asp-controller="Delivery" asp-route-id="@donation.Id" style="display:inline;">
+                                        <input type="hidden" name="donationId" value="@donation.Id" />
+                                        <button type="submit" class="btn btn-sm btn-primary">تم أخذ التبرع</button>
+                                    </form>
+                        }
+                        else if (donation.Status == Feed_Bridge.Models.Enums.DonationStatus.Delivered)
+                        {
+                                    <span class="text-success">تم التوصيل</span>
+                        }
+                        else
+                        {
+                                    <span>-</span>
+                        }
+                        </td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+</div>

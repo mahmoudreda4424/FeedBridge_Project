@@ -1,0 +1,86 @@
+﻿@using Feed_Bridge.Models.Enums
+@model IEnumerable<Feed_Bridge.Models.Entities.Order>
+
+@{
+    ViewData["Title"] = "تتبع التوصيلات";
+    Layout = "_AdminLayout"; // لو عندك Layout خاص بالادمن
+}
+
+<h2 class="mb-4">📦 تتبع التوصيلات</h2>
+
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-striped table-hover align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>رقم الطلب</th>
+                <th>الدليفري</th>
+                <th>تاريخ التعيين</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var order in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-controller="Order" asp-route-id="@order.Id" class="fw-bold text-decoration-none">
+                                #@order.Id
+                            </a>
+                        </td>
+                        <td>
+                            @if (order.Delivery != null)
+                            {
+                                <a asp-action="Profile" asp-controller="User" asp-route-id="@order.Delivery.Id" class="text-decoration-none">
+                                    <i class="bi bi-person-circle"></i> @order.Delivery.UserName
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">لم يُحدد بعد</span>
+                            }
+                        </td>
+                        <td>
+                            @if (order.UpdatedAt != null)
+                            {
+                                @order.UpdatedAt.ToString("yyyy-MM-dd HH:mm")
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            @switch (order.Status)
+                            {
+                                case OrderStatus.Assigned:
+                                    <span class="badge bg-warning text-dark">قيد التوصيل</span>
+                                    ;
+                                    break;
+                                case OrderStatus.Delivered:
+                                    <span class="badge bg-success">تم التوصيل</span>
+                                    ;
+                                    break;
+                                case OrderStatus.Approved:
+                                    <span class="badge bg-primary">موافق عليه ولم يتم اخذه من قبل موصل </span>
+                                    ;
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">@order.Status</span>
+                                    ;
+                                    break;
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-muted text-center">لا يوجد بيانات متاحة</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

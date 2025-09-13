@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Feed_Bridge.Models.Entities.Support>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📊 سجل الدعم المالي الخاص بي</h2>
+
+    <div class="text-end mb-3">
+        <a asp-action="Create" class="btn btn-success">+ دعم جديد</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center">لا يوجد دعم مالي بعد.</p>
+    }
+    else
+    {
+        <table class="table table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>رقم العملية</th>
+                    <th>المبلغ</th>
+                    <th>طريقة الدفع</th>
+                    <th>حالة الدفع</th>
+                    <th>تاريخ العملية</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.Id</td>
+                        <td>@s.Amount.ToString("C")</td>
+                        <td>@s.PaymentMethod</td>
+                        <td>
+                            @switch (s.Status)
+                            {
+                                case Feed_Bridge.Models.Enums.PaymentStatus.Pending:
+                                    <span class="badge bg-warning">قيد الانتظار</span>
+                                    ;
+                                    break;
+                                case Feed_Bridge.Models.Enums.PaymentStatus.Success:
+                                    <span class="badge bg-success">تم الدفع</span>
+                                    ;
+                                    break;
+                                case Feed_Bridge.Models.Enums.PaymentStatus.Failed:
+                                    <span class="badge bg-danger">فشل الدفع</span>
+                                    ;
+                                    break;
+                                case Feed_Bridge.Models.Enums.PaymentStatus.Refunded:
+                                    <span class="badge bg-info">تم الاسترجاع</span>
+                                    ;
+                                    break;
+                            }
+                        </td>
+                        <td>@s.PaymentDate.ToString("yyyy/MM/dd HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

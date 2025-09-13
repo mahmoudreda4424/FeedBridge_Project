@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Feed_Bridge.Models.Entities.Product>
+@using Feed_Bridge.Models.Enums
+@using System.Linq
+
+@{
+    ViewData["Title"] = "المنتجات";
+    var categories = ViewBag.Categories as List<string>;
+    var selectedCategory = ViewBag.SelectedCategory as string;
+}
+
+<section class="products-hero">
+    <div class="products-hero-container">
+        <h1>طعام في انتظار من يستحق</h1>
+        <p>هنا تجد قائمه بالاطعمه المتاحه للتبرع...</p>
+    </div>
+</section>
+
+<!-- فلتر الكاتيجوري (فقط) -->
+<div class="filter-container" style="margin:20px; text-align:center;">
+    <form method="get" action="/Product/Index" style="display:inline-block;">
+        <select id="categorySelect" name="category" class="form-control" style="max-width:300px; display:inline-block; margin-right:10px;">
+            <option value="">-- كل التصنيفات --</option>
+            @if (categories != null)
+            {
+                foreach (var cat in categories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            }
+        </select>
+
+        <button type="submit" class="btn btn-primary">بحث</button>
+    </form>
+</div>
+
+<!-- عرض المنتجات (الكروت كما طلبتي) -->
+<section class="products-cards">
+    <h2 class="products-header">المنتجات</h2>
+    <div class="products-cards-container">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var product in Model)
+            {
+                <div class="product-card">
+                    <img src="~/uploads/@(product.ImgURL ?? "img.png")" alt="food" />
+                    <div class="product-card-text">
+                        <h2>@product.Name</h2>
+                        <p>الكمية المتاحة: @product.Quantity</p>
+                        <p>التصنيف: <strong>@product.Category</strong></p>
+                        <span class="exp-date" style="color: red;">تاريخ الانتهاء :</span>
+                        <span>@product.ExpirDate.ToString("yyyy/MM/dd")</span>
+
+                        @if (product.Quantity > 0)
+                        {
+                            <form class="add-to-cart-form" asp-action="Index" asp-controller="Cart" data-product-id="@product.Id">
+                                <button type="submit" class="btn add-to-cart-btn">اضف الي السلة</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span style="color: gray; font-weight: bold;">المنتج خلصان</span>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p style="text-align:center; font-size:18px; margin:20px; color:red;">
+                لا توجد منتجات متاحة حالياً.
+            </p>
+        }
+    </div>
+</section>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        $(document).on("submit", ".add-to-cart-form", function (e) {
+            e.preventDefault();
+
+            let productId = $(this).data("product-id");
+
+            $.post("/Cart/Add", { productId: productId, quantity: 1 }, function (data) {
+                if (data.success) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: data.message
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
+            $(document).on("submit", ".add-to-cart-form", function (e) {
+                e.preventDefault();
+
+                let productId = $(this).data("product-id");
+
+                $.post("/Cart/Add", { productId: productId, quantity: 1 }, function (data) {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.message
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message
+                        });
+                    }
+                });
+            });
+	</script>
+}
+
+
+@section FooterSection {
+    @await Html.PartialAsync("_Footer")
+}

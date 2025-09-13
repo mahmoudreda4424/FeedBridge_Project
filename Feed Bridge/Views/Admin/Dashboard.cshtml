@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewData["Title"] = "لوحة التحكم";
+    ViewData["ActivePage"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="Admin-Dashboard-Content active">
+    <div class="container mt-4">
+        <h1 class="mb-3">مرحبا بك في لوحة تحكم الأدمن</h1>
+        <p class="text-muted">هنا تقدر تشوف ملخص الإحصائيات الخاصة بالموقع.</p>
+
+        <!-- الجزء الخاص بالترحيب -->
+        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded shadow-sm mb-4">
+            <div class="d-flex align-items-center">
+                <span class="material-symbols-outlined fs-1 me-2 " style="color:#1cba7f;">person</span>
+                <p class="mb-0">مرحبًا<br><span class="fw-bold">@User.Identity.Name</span></p>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-flex align-items-center">
+                <button type="submit" class="btn btn-link text-danger text-decoration-none d-flex align-items-center" style="padding:0;">
+                    <span class="material-symbols-outlined me-1">logout</span>
+                    الخروج
+                </button>
+            </form>
+
+
+        </div>
+
+        <!-- الإحصائيات -->
+        <!-- الإحصائيات -->
+        <div class="row text-center">
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-white shadow rounded">
+                    <span class="material-symbols-outlined fs-1 " style="color:#1cba7f;">groups</span>
+                        <p class="mt-2">
+
+                        <a asp-action="GetAllSupports" asp-controller="Admin">إجمالي المتبرعين</a>
+                        <br />
+                            <span class="fw-bold">@ViewData["TotalDonors"]</span>
+                        </p>
+                    </div>
+                </div>
+            <div class="col-md-4 mb-3">
+                <div class="p-3 bg-white shadow rounded">
+                    <span class="material-symbols-outlined fs-1 " style="color:#1cba7f;">favorite</span>
+                    <p class="mt-2">
+                        <a asp-action="Donate" asp-controller="Admin">إجمالي التبرعات</a>
+                        <br />
+                        <span class="fw-bold">@ViewData["TotalDonations"]</span>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="p-3 bg-white shadow rounded">
+                    <span class="material-symbols-outlined fs-1 " style="color:#1cba7f;">attach_money</span>
+                    <p class="mt-2">
+                        <a asp-action="GetAllSupports" asp-controller="Admin">إجمالي المساعدات المالية</a>
+                        <br />
+                        <span class="fw-bold">@ViewData["TotalSupports"]</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

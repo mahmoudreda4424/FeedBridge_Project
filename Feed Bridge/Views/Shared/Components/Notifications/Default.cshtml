@@ -1,0 +1,30 @@
+﻿@model List<Feed_Bridge.Models.Entities.Notification>
+<style>
+    /* إشعارات جديدة (غير مقروءة) */
+    .notifications-box .new-notification {
+        background-color: #d4f7dc; /* أخضر فاتح */
+        border-radius: 4px;
+        padding: 5px;
+        display: block;
+    }
+
+</style>
+<div class="notifications-container">
+    <span class="material-symbols-outlined notifications-icon">
+        notifications
+    </span>
+    <span class="badge bg-danger">@ViewData["NewNotificationsCount"]</span>
+    <div class="notifications-box">
+        <h3>الاشعارات</h3>
+        <ul>
+            @foreach (var notif in Model)
+            {
+                <li>
+                    <a href="@notif.RedirectUrl" data-id="@notif.Id" class="notif-link @(notif.IsRead ? "" : "new-notification")">
+                        @notif.Description
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

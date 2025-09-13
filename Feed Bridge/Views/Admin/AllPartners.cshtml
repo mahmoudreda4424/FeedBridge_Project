@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Feed_Bridge.Models.Entities.Partener>
+
+@{
+    ViewData["Title"] = "الشراكات";
+    ViewData["ActivePage"] = "AllPartners";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">قائمة الشراكات</h1>
+    <a asp-action="Create" asp-controller="Partner" class="btn btn-primary" style="background-color:#1cba7f;">
+        <i class="bi bi-plus-circle"></i> إضافة شريك جديد
+    </a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>اسم الشريك</th>
+            <th>صورة الشريك</th>
+            <th>رابط التوجيه</th>
+            <th>حذف</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var partner in Model)
+            {
+                <tr>
+                    <td>@partner.Name</td>
+                    <td>
+                        <img src="@Url.Content(partner.ImageUrl)" alt="@partner.ImageUrl" style="width:150px; height:150px;" />
+                    </td>
+                    <td><a href="@partner.RedirectUrl" target="_blank">زيارة الصفحة</a></td>
+                    <td>
+                        <form asp-action="Delete" asp-controller="Partner" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@partner.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد من الحذف؟');">
+                                <i class="bi bi-trash"></i> حذف
+                            </button>
+                        </form>
+                    </td>
+
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2" class="text-center">لا توجد شراكات</td>
+            </tr>
+        }
+    </tbody>
+</table>

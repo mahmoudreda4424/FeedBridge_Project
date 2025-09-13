@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    ViewData["ActivePage"] = "Dashboard";
+    Layout = "~/Views/Shared/Dashboard.cshtml"; // ربط ال layout
+}
+
+<div class="dashboard-page">
+    <div class="special-heading">
+        <h1>لوحة التحكم</h1>
+    </div>
+    <div class="Admin-Dashboard-Content">
+        <div class="Hello-Admin">
+            <div class="hello-data">
+                <span class="material-symbols-outlined"> person </span>
+                <p>مرحبًا<br><span>اسم المستخدم</span></p>
+            </div>
+            <div class="lgt">
+                <span class="material-symbols-outlined"> logout </span>
+                <p><span>الخروج</span></p>
+            </div>
+        </div>
+        <div class="Details-Parent">
+            <div class="Details">
+                <span class="material-symbols-outlined"> groups </span>
+                <p>إجمالي المتبرعين <br> <span>33335</span></p>
+            </div>
+            <div class="Details">
+                <span class="material-symbols-outlined"> favorite </span>
+                <p>إجمالي التبرعات<br> <span>33335</span></p>
+            </div>
+            <div class="Details">
+
+                <span class="material-symbols-outlined"> attach_money </span>
+                <p>إجمالي المساعدات المالية <br> <span>33335</span></p>
+            </div>
+        </div>
+    </div>
+
+</div>

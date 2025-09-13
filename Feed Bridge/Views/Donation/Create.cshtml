@@ -1,0 +1,109 @@
+﻿@model Feed_Bridge.ViewModel.DonationViewModel
+<style>
+    .upload-img:hover {
+        cursor: pointer;
+    }
+</style>
+
+
+<div class="donate-container">
+    <div class="donate-img">
+        <img src="~/imgs/donation.png" alt="donate-img" />
+    </div>
+    <div class="donate-form">
+        <form asp-action="Create" asp-controller="Donation" method="post" enctype="multipart/form-data">
+
+
+            <div id="imagePreviewContainer" style="display: none; ">
+                <img id="imagePreview" src="#" alt="Image Preview" style="width: 100%; height: 300px;" />
+            </div>
+
+            <label class="upload-img" for="imageInput">
+                <span class="material-symbols-outlined" id="uploadIcon">
+                    upload
+                </span>
+                <p>اضف صوره المنتج</p>
+                <input asp-for="Image" type="file" accept="image/*" id="imageInput" />
+            </label>
+
+
+
+            <input asp-for="Name" placeholder="اسم المنتج  ..." class="form-control" />
+            <span asp-validation-for="Name" class="text-danger" style="color:red;"></span>
+
+            <!-- 🟢 Dropdown لاختيار الكاتيجوري -->
+            <div class="form-group mt-2 mb-2">
+                <label asp-for="Category">اختر التصنيف</label>
+                <select asp-for="Category" asp-items="Html.GetEnumSelectList<Feed_Bridge.Models.Enums.ProductCategory>()" class="form-control"></select>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <!-- نهاية الكاتيجوري -->
+
+            <div class="group">
+                <input asp-for="ExpirDate" type="date" class="form-control" />
+                <span asp-validation-for="ExpirDate" class="text-danger" style="color:red;"></span>
+
+                <input asp-for="Quantity" type="number" min="1" placeholder="الكمية ..." class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger" style="color:red;"></span>
+            </div>
+
+            <div class="group">
+                <input asp-for="Address" placeholder="العنوان ..." class="form-control" />
+                <span asp-validation-for="Address" class="text-danger" style="color:red;"></span>
+
+                <input asp-for="Phone" placeholder="رقم الهاتف ..." class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger " style="color:red;"></span>
+            </div>
+
+            <input asp-for="Description" class="donationDescription form-control" placeholder="وصف التبرع ..." />
+            <span asp-validation-for="Description" class="text-danger"></span>
+            <div asp-validation-summary="All" class="text-denger" style="color:red;"></div>
+            <button type="submit" class="btn">تبرع</button>
+        </form>
+    </div>
+</div>
+
+@section FooterSection {
+    @await Html.PartialAsync("_Footer")
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // كود معاينة الصورة...
+            const imageInput = document.getElementById('imageInput');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const imagePreview = document.getElementById('imagePreview');
+
+            imageInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '#';
+                    imagePreviewContainer.style.display = 'none';
+                }
+            });
+            // نهاية كود معاينة الصورة
+
+            // كود SweetAlert2 للإشعار
+            var successMessage = '@Html.Raw(TempData["SuccessMessage"])';
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم بنجاح!',
+                    text: successMessage,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        });
+    </script>
+}
